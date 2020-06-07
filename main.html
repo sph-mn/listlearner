@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>listlearner</title>
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';" />
+    <style>
+      html {
+        font-size: 20px;
+        font-family: monospace;
+      }
+      button {
+        font-size: 24px;
+      }
+      body {
+        background-color: #000;
+        color: #aaa;
+      }
+      #actions {
+        position: fixed;
+        top: 0;
+        width: 100%;
+        height: 30px;
+        background-color: #000;
+      }
+      #file-content {
+        margin-top: 30px;
+        font-size: 175%;
+      }
+      #file-content .selected {
+        background-color: #aaa;
+        color: black;
+      }
+      .link-button {
+        text-decoration: underline;
+        cursor: pointer;
+      }
+      .link-button:hover {
+        text-decoration: none;
+      }
+      #save-status {
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        background-color: green;
+      }
+      #save-status.unsaved {
+        background-color: red;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="actions">
+      <span id="open" class="link-button">open</span> <span id="save-status"></span>
+    </div>
+    <div id="file-content"></div>
+  </body>
+  <script>
+    const electron = require("electron")
+    const content = document.getElementById("file-content")
+    const save_status = document.getElementById("save-status")
+    const key = {
+      left: 37,
+      right: 39,
+      up: 38,
+      down: 40,
+      q: 81
+    }
+    let selection = 0
+    let save_interval = 5000
+    let save_timeout = null
+    function save() {
+      if(save_timeout) return
+      save_status.classList.add("unsaved")
+      save_timeout = setTimeout(function() {
+        const data = []
+        for (let i = 0; i < content.children.length; i += 1) {
+          data.push(content.children[i].innerHTML)
+        }
+        const success = electron.ipcRenderer.sendSync("save", data.join("\n"))
+        clearTimeout(save_timeout)
+        save_timeout = null
+        if (success) {
+          save_status.classList.remove("unsaved")
+        } else {
+          alert("save failed")
+        }
+      }, save_interval)
+    }
+    function set_selection(index) {
+      content.children[selection].classList.remove("selected")
+      selection = index
+      const a = content.children[selection]
+      a.classList.add("selected")
+      const b = a.getBoundingClientRect()
+      if(b.top < a.offsetHeight || b.bottom > window.innerHeight) {
+        a.scrollIntoView({block: "center"})
+      }
+    }
+    function select_previous() {
+      set_selection(Math.max(0, selection - 1))
+    }
+    function select_next() {
+      set_selection(Math.min(content.children.length - 1, selection + 1))
+    }
+    function move_top() {
+      content.children[selection].classList.remove("selected")
+      content.prepend(content.children[selection])
+      content.children[selection].classList.add("selected")
+      save()
+    }
+    function move_bottom() {
+      content.children[selection].classList.remove("selected")
+      content.appendChild(content.children[selection])
+      content.children[selection].classList.add("selected")
+      save()
+    }
+    function open(text) {
+      content.innerHTML = ""
+      if(!text) return
+      text.split("\n").forEach(function(line, index) {
+        const a = document.createElement("div")
+        a.innerHTML = line
+        a.addEventListener("click", function() {
+          for (let i = 0; i < content.children.length; i += 1) {
+            if(a == content.children[i]) {
+              set_selection(i)
+              break
+            }
+          }
+        })
+        content.appendChild(a)
+      })
+      set_selection(0)
+    }
+    document.addEventListener("keydown", function (event) {
+      if(key.down == event.keyCode) {
+        select_next()
+      }
+      else if (key.up == event.keyCode) {
+        select_previous()
+      }
+      else if (key.left == event.keyCode) {
+        move_top()
+      }
+      else if (key.right == event.keyCode) {
+        move_bottom()
+      }
+      else if (event.ctrlKey && key.q == event.keyCode) {
+        electron.ipcRenderer.send("quit")
+      } else {
+        return
+      }
+      event.preventDefault()
+    })
+    document.getElementById("open").addEventListener("click", function () {
+      content.innerHTML = ""
+      open(electron.ipcRenderer.sendSync("open"))
+    })
+    open(electron.ipcRenderer.sendSync("open-path", "/home/nonroot/test"))
+  </script>
+</html>

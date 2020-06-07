@@ -1,0 +1,15 @@
+{
+  "name": "listlearner",
+  "version": "1.0.0",
+  "license": "GPL-3.0-or-later",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "dependencies": {
+    "coffee-script": "*"
+  },
+  "devDependencies": {
+    "electron": "^9.0.2"
+  }
+}

@@ -1,6 +1,7 @@
 electron = require "electron"
 fs = require "fs"
 window = null
+current_path = process.argv[1]
 
 electron.app.whenReady().then () ->
   window = new electron.BrowserWindow({webPreferences: {nodeIntegration: true}})
@@ -18,7 +19,6 @@ electron.ipcMain.on "open", (event) ->
   else
     event.returnValue = false
 
-current_path = null
 
 electron.ipcMain.on "open-path", (event, path) ->
   current_path = path
@@ -27,8 +27,9 @@ electron.ipcMain.on "open-path", (event, path) ->
 electron.ipcMain.on "save", (event, data) ->
   try
     fs.writeFileSync current_path, data
-    event.returnValue = true
-  catch
     event.returnValue = false
+  catch exc
+    event.returnValue = exc.toString()
 
 electron.ipcMain.on "quit", (event, path) -> window.close()
+electron.ipcMain.on "current_path", (event) -> event.returnValue = current_path

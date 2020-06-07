@@ -22,6 +22,7 @@
         width: 100%;
         height: 30px;
         background-color: #000;
+        border-bottom: 1px solid #888;
       }
       #file-content {
         margin-top: 30px;
@@ -32,20 +33,21 @@
         color: black;
       }
       .link-button {
-        text-decoration: underline;
         cursor: pointer;
       }
       .link-button:hover {
-        text-decoration: none;
+        text-decoration: underline;
       }
       #save-status {
         display: inline-block;
-        width: 10px;
-        height: 10px;
-        background-color: green;
+        border-radius: 3px;
+        float: right;
+        margin-right: 20px;
+        width: 20px;
+        height: 20px;
       }
       #save-status.unsaved {
-        background-color: red;
+        background-color: #888;
       }
     </style>
   </head>
@@ -77,13 +79,13 @@
         for (let i = 0; i < content.children.length; i += 1) {
           data.push(content.children[i].innerHTML)
         }
-        const success = electron.ipcRenderer.sendSync("save", data.join("\n"))
+        const error = electron.ipcRenderer.sendSync("save", data.join("\n"))
         clearTimeout(save_timeout)
         save_timeout = null
-        if (success) {
-          save_status.classList.remove("unsaved")
+        if (error) {
+          alert("save failed\n" + error)
         } else {
-          alert("save failed")
+          save_status.classList.remove("unsaved")
         }
       }, save_interval)
     }
@@ -116,8 +118,9 @@
       save()
     }
     function open(text) {
-      content.innerHTML = ""
+      console.log(text)
       if(!text) return
+      content.innerHTML = ""
       text.split("\n").forEach(function(line, index) {
         const a = document.createElement("div")
         a.innerHTML = line
@@ -154,9 +157,9 @@
       event.preventDefault()
     })
     document.getElementById("open").addEventListener("click", function () {
-      content.innerHTML = ""
       open(electron.ipcRenderer.sendSync("open"))
     })
-    open(electron.ipcRenderer.sendSync("open-path", "/home/nonroot/test"))
+    const current_path = electron.ipcRenderer.sendSync("current_path")
+    if (current_path) open(electron.ipcRenderer.sendSync("open-path", current_path))
   </script>
 </html>

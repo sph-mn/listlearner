@@ -10,6 +10,7 @@
     "coffee-script": "*"
   },
   "devDependencies": {
-    "electron": "^9.0.2"
+    "electron": "^9.0.2",
+    "electron-packager": "^14.2.1"
   }
 }

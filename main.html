@@ -49,6 +49,9 @@
       #save-status.unsaved {
         background-color: #888;
       }
+      #file-content .hidden {
+        display: none;
+      }
     </style>
   </head>
   <body>
@@ -66,7 +69,8 @@
       right: 39,
       up: 38,
       down: 40,
-      q: 81
+      q: 81,
+      space: 32
     }
     let selection = 0
     let save_interval = 5000
@@ -77,7 +81,7 @@
       save_timeout = setTimeout(function() {
         const data = []
         for (let i = 0; i < content.children.length; i += 1) {
-          data.push(content.children[i].innerHTML)
+          data.push(content.children[i].textContent)
         }
         const error = electron.ipcRenderer.sendSync("save", data.join("\n"))
         clearTimeout(save_timeout)
@@ -99,6 +103,9 @@
         a.scrollIntoView({block: "center"})
       }
     }
+    function reveal() {
+      content.children[selection].children[0].classList.toggle("hidden")
+    }
     function select_previous() {
       set_selection(Math.max(0, selection - 1))
     }
@@ -118,12 +125,16 @@
       save()
     }
     function open(text) {
-      console.log(text)
       if(!text) return
       content.innerHTML = ""
       text.split("\n").forEach(function(line, index) {
         const a = document.createElement("div")
-        a.innerHTML = line
+        const b = document.createElement("span")
+        b.classList.add("hidden")
+        line = line.split(" ")
+        a.innerHTML = line[0]
+        b.innerHTML = " " + line.slice(1, line.length).join(" ")
+        a.appendChild(b)
         a.addEventListener("click", function() {
           for (let i = 0; i < content.children.length; i += 1) {
             if(a == content.children[i]) {
@@ -142,6 +153,9 @@
       }
       else if (key.up == event.keyCode) {
         select_previous()
+      }
+      else if (key.space == event.keyCode) {
+        reveal()
       }
       else if (key.left == event.keyCode) {
         move_top()

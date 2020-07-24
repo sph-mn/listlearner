@@ -1,7 +1,11 @@
 electron = require "electron"
 fs = require "fs"
 window = null
-current_path = process.argv[1]
+
+if process.argv[0].endsWith("electron")
+  current_path = process.argv[2]
+else
+  current_path = process.argv[1]
 
 electron.app.whenReady().then () ->
   window = new electron.BrowserWindow({webPreferences: {nodeIntegration: true}})
@@ -32,4 +36,8 @@ electron.ipcMain.on "save", (event, data) ->
     event.returnValue = exc.toString()
 
 electron.ipcMain.on "quit", (event, path) -> window.close()
-electron.ipcMain.on "current_path", (event) -> event.returnValue = current_path
+electron.ipcMain.on "current_path", (event) ->
+  if current_path and fs.statSync(current_path).isFile()
+    event.returnValue = current_path
+  else
+    event.returnValue = false

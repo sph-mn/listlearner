@@ -3,7 +3,6 @@
 * replacement alternative to anki, for me anyway, because:
   * a) listlearner it is extremely responsive
   * b) moving between all lines freely as well as doing immediate repeated reviews is possible
-  * c) automated spaced repetition doesnt do it for me, i know naturally when i need to review
 
 # features
 * load lists of questions and answers. for example, vocabulary with translations

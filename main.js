@@ -68,8 +68,7 @@ electron.ipcMain.on("save", function(event, data) {
     })
     fs.writeFileSync(current_path, data)
     return event.returnValue = false
-  } catch (error) {
-    exc = error
+  } catch (exc) {
     return event.returnValue = exc.toString()
   }
 })

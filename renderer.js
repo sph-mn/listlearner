@@ -103,7 +103,7 @@ function find_higher(sort, start) {
 function move_up() {
   const a = content.children[selection]
   const id = a.getAttribute("data-id")
-  const sort = row_data[id][sort_i] - 1
+  const sort = row_data[id][sort_i] - 2
   row_data[id][sort_i] = sort
   a.children[0].children[0].innerHTML = sort
   if (0 < selection) {

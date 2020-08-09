@@ -1,8 +1,8 @@
 # purpose
-* learn vocabulary by sorting lists. less known at the top, known at the bottom
-* replacement alternative to anki, for me anyway, because:
-  * a) listlearner it is extremely responsive
-  * b) moving between all lines freely as well as doing immediate repeated reviews is possible
+* list questions, show answers by pressing the spacebar
+* sort lists from less known to well known at the bottom
+
+compared to anki, it is always possible to move between all lines freely and do immediate repeated reviews
 
 # features
 * load lists of questions and answers. for example, vocabulary with translations

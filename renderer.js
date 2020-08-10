@@ -11,27 +11,34 @@ const key = {
 }
 let selection = 0
 let save_interval = 5000
+let far_distance = 16
 let save_timeout = null
-let row_data
-let sort_i
+let content_data
+let unsaved
 
-function open(data) {
+function get_content() {
+  result = []
+  for (let i = 0; i < content.children.length; i += 1) {
+    const id = parseInt(content.children[i].getAttribute("id"))
+    result.push(content_data[id])
+  }
+  return result
+}
+
+function set_content(data) {
+  // [[string:csv_field, ...]]
   if (!data) return
   content.innerHTML = ""
-  row_data = data
-  sort_i = data[0].length - 1
   data.forEach(function(line, index) {
-    const a = document.createElement("div")
     const b = document.createElement("span")
-    const c = document.createElement("span")
     b.classList.add("hidden")
+    b.innerHTML = " " + line.slice(1).join(" ")
+    const a = document.createElement("div")
     a.innerHTML = line[0]
-    b.innerHTML = " " + line.slice(1, line.length - 1).join(" ") + " "
-    c.innerHTML = line[line.length - 1]
-    b.appendChild(c)
     a.appendChild(b)
-    a.setAttribute("data-id", index)
+    a.setAttribute("id", index)
     a.addEventListener("click", function() {
+      // find the current index
       for (let i = 0; i < content.children.length; i += 1) {
         if (a == content.children[i]) {
           set_selection(i)
@@ -41,14 +48,23 @@ function open(data) {
     })
     content.appendChild(a)
   })
+  content_data = data
   set_selection(0)
 }
 
 function save() {
+  if (!unsaved) return false
+  const error = electron.ipcRenderer.sendSync("save", get_content())
+  if (error) return error
+  unsaved = false
+  return false
+}
+
+function save_with_timeout() {
   if (save_timeout) return
   save_status.classList.add("unsaved")
   save_timeout = setTimeout(function() {
-    const error = electron.ipcRenderer.sendSync("save", row_data)
+    const error = save()
     clearTimeout(save_timeout)
     save_timeout = null
     if (error) {
@@ -84,53 +100,30 @@ function select_next() {
   set_selection(Math.min(content.children.length - 1, selection + 1))
 }
 
-function find_lower(sort, start) {
-  for (let i = start; i >= 0; i -= 1) {
-    const id = content.children[i].getAttribute("data-id")
-    if (row_data[id][sort_i] < sort) return content.children[i]
-  }
-  return false
-}
-
-function find_higher(sort, start) {
-  for (let i = start; i < content.children.length; i += 1) {
-    const id = content.children[i].getAttribute("data-id")
-    if (row_data[id][sort_i] > sort + 1) return content.children[i]
-  }
-  return false
-}
-
-function move_up() {
+function move_up(far) {
+  if (0 >= selection) return
+  unsaved = true
   const a = content.children[selection]
-  const id = a.getAttribute("data-id")
-  const sort = row_data[id][sort_i] - 2
-  row_data[id][sort_i] = sort
-  a.children[0].children[0].innerHTML = sort
-  if (0 < selection) {
-    a.classList.remove("selected")
-    const lower = find_lower(sort, selection - 1)
-    if (lower) content.insertBefore(a, lower.nextSibling)
-    else content.prepend(a)
-    content.children[selection].classList.add("selected")
-  }
-  save()
+  a.classList.remove("selected")
+  content.insertBefore(a, content.children[Math.max(0, selection - (far ? far_distance : 1))])
+  content.children[selection].classList.add("selected")
+  save_with_timeout()
 }
 
-function move_down() {
+function move_down(far) {
+  if ((content.children.length - 1) <= selection) return
+  unsaved = true
   const a = content.children[selection]
-  const id = a.getAttribute("data-id")
-  const sort = row_data[id][sort_i] + 1
-  row_data[id][sort_i] = sort
-  a.children[0].children[0].innerHTML = sort
-  if (selection < content.children.length - 1) {
-    a.classList.remove("selected")
-    const higher = find_higher(sort, selection + 1)
-    if (higher) content.insertBefore(a, higher)
-    else content.append(a)
-    content.children[selection].classList.add("selected")
-  }
-  save()
+  a.classList.remove("selected")
+  const b_index = selection + (far ? far_distance : 1) + 1
+  if (b_index < content.children.length) {
+    content.insertBefore(a, content.children[b_index])
+  } else content.appendChild(a)
+  content.children[selection].classList.add("selected")
+  save_with_timeout()
 }
+
+set_content(electron.ipcRenderer.sendSync("open-current-path"))
 
 document.addEventListener("keydown", function(event) {
   if (key.down == event.keyCode) {
@@ -140,10 +133,11 @@ document.addEventListener("keydown", function(event) {
   } else if (key.space == event.keyCode) {
     reveal()
   } else if (key.left == event.keyCode) {
-    move_up()
+    move_up(event.ctrlKey)
   } else if (key.right == event.keyCode) {
-    move_down()
+    move_down(event.ctrlKey)
   } else if (event.ctrlKey && key.q == event.keyCode) {
+    save()
     electron.ipcRenderer.send("quit")
   } else {
     return
@@ -151,9 +145,6 @@ document.addEventListener("keydown", function(event) {
   event.preventDefault()
 })
 
-document.getElementById("open").addEventListener("click", function() {
-  open(electron.ipcRenderer.sendSync("open"))
+document.getElementById("open").addEventListener("click", () => {
+  set_content(electron.ipcRenderer.sendSync("open-dialog"))
 })
-
-const current_path = electron.ipcRenderer.sendSync("current_path")
-if (current_path) open(electron.ipcRenderer.sendSync("open-path", current_path))

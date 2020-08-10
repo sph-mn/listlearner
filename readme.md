@@ -1,29 +1,30 @@
 # purpose
-* list questions, show answers by pressing the spacebar
-* sort lists from less known to well known at the bottom
+* list questions from a text file and show answers by pressing the spacebar
+* sort lists from less known to well known by using the arrow keys
 
-compared to anki, it is always possible to move between all lines freely and do immediate repeated reviews
+example use case: learning vocabulary
 
 # features
-* load lists of questions and answers. for example, vocabulary with translations
-* show only the question
-* space shows/hides the answer
-* up and down arrow move between lines
-* left arrow on the keyboard moves the line further up (relearn)
-* right arrow moves the line further down (recalled)
-* ctrl+q quits the application
-* saves files automatically. if unsaved, a grey box is visible in the top right corner. it doesnt save extra on quit, wait till the box disappears before quit
-* files must be space separated csv (dsv) files (can be created with libreoffice calc or excel, or by hand. words with spaces surrounded by ", inside " escaped by doubling "")
-* csv headers are not supported
+* files for listlearner are space delimited dsv/csv files, which can be created with libreoffice calc or excel, or by hand. fields with spaces are surrounded by ", inside " escaped by doubling ""
 * the first column is the question, the rest the answer
-* the filename suffix is irrelevant, can be .txt for compatibility
-* the application adds a sort column with a signed integer number that stores the number of times the line has been moved up or down
-* using a sort index keeps the easy things together. always moving to the topmost or bottom (how this app started out) would lead to frequent reviews of the well known lines
-* because the files stay plaintext, they can be viewed anywhere text files can be displayed
-* if the last column in the file already is a number that is part of the information, then the sort column must be added manually (set to 0) or it will be used and overwritten
+* csv headers are not supported, they will appear like any other line
+* files are saved automatically, and on quit by keypress. if unsaved, a grey box is displayed in the top right corner
+* the filename suffix is irrelevant. it can be .txt for compatibility with viewers
+* the files only have the lines resorted and stay plaintext. the files can be viewed anywhere where text files can be viewed
+* compared to spaced repetition flashcard software, with listlearner it is always possible to move freely between all questions and do immediate repeated reviews
 
-this is a rudimentary implementation that only does the minimum of what i needed. should other people use it then it would become more polished.
 make backups of your csv files before using the app
+
+# keyboard controls
+
+| key | action |
+| --- | --- |
+| space  | show/hide answer |
+| left arrow | move the line up |
+| right arrow | move the line down |
+| ctrl + left arrow | move the line up multiple steps at once |
+| ctrl + right arrow | move the line down multiple steps at once |
+| ctrl + q | save and quit |
 
 # requirements and setup
 * install [node.js](https://nodejs.org/en/) if not already installed
@@ -46,3 +47,8 @@ make backups of your csv files before using the app
 
 # license
 gpl3+
+
+# developer information
+* the csv delimiter can be changed at the top of main.js
+* the app is built using [electron](https://www.electronjs.org/)
+* relevant files are main.js (the back end) and render.js (the front end), as well as main.html

@@ -36,7 +36,7 @@ electron.app.whenReady().then(function() {
     }
   })
   window.removeMenu()
-  window.webContents.openDevTools()
+  //window.webContents.openDevTools()
   window.loadFile("main.html")
 })
 

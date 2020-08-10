@@ -4,6 +4,8 @@
 
 example use case: learning vocabulary
 
+![screenshot](other/screenshot.png?raw=true)
+
 # features
 * files for listlearner are space delimited dsv/csv files, which can be created with libreoffice calc or excel, or by hand. fields with spaces are surrounded by ", inside " escaped by doubling ""
 * the first column is the question, the rest the answer

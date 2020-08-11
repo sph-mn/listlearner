@@ -24,8 +24,8 @@ make backups of your csv files before using the app
 | space  | show/hide answer |
 | left arrow | move the line up |
 | right arrow | move the line down |
-| ctrl + left arrow | move the line up multiple steps at once |
-| ctrl + right arrow | move the line down multiple steps at once |
+| ctrl + left arrow | move the line to the top |
+| ctrl + right arrow | move the line to the bottom |
 | ctrl + q | save and quit |
 
 # requirements and setup

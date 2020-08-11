@@ -15,6 +15,7 @@ let far_distance = 16
 let save_timeout = null
 let content_data
 let unsaved
+let move_distance = 8
 
 function get_content() {
   result = []
@@ -101,11 +102,11 @@ function select_next() {
 }
 
 function move_up(far) {
-  if (0 >= selection) return
+  if (0 == selection) return
   unsaved = true
   const a = content.children[selection]
   a.classList.remove("selected")
-  content.insertBefore(a, content.children[Math.max(0, selection - (far ? far_distance : 1))])
+  content.insertBefore(a, content.children[(far ? 0 : Math.max(0, selection - move_distance))])
   content.children[selection].classList.add("selected")
   save_with_timeout()
 }
@@ -115,10 +116,10 @@ function move_down(far) {
   unsaved = true
   const a = content.children[selection]
   a.classList.remove("selected")
-  const b_index = selection + (far ? far_distance : 1) + 1
-  if (b_index < content.children.length) {
-    content.insertBefore(a, content.children[b_index])
-  } else content.appendChild(a)
+  const last_index = content.children.length - 1
+  b_index = (far ? last_index : selection + move_distance) + 1
+  if (b_index >= last_index) content.appendChild(a)
+  else content.insertBefore(a, content.children[b_index])
   content.children[selection].classList.add("selected")
   save_with_timeout()
 }

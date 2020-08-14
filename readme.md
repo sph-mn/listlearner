@@ -22,10 +22,10 @@ make backups of your csv files before using the app
 | key | action |
 | --- | --- |
 | space  | show/hide answer |
-| left arrow | move the line up |
-| right arrow | move the line down |
-| ctrl + left arrow | move the line to the top |
-| ctrl + right arrow | move the line to the bottom |
+| left arrow | move the line to the top |
+| right arrow | move the line to the bottom |
+| ctrl + left arrow | move the line up by half the line count |
+| ctrl + right arrow | move the line down by half the line count |
 | ctrl + q | save and quit |
 
 # requirements and setup

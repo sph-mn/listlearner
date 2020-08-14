@@ -11,11 +11,10 @@ const key = {
 }
 let selection = 0
 let save_interval = 5000
-let far_distance = 16
 let save_timeout = null
 let content_data
 let unsaved
-let move_distance = 8
+let move_distance
 
 function get_content() {
   result = []
@@ -50,6 +49,7 @@ function set_content(data) {
     content.appendChild(a)
   })
   content_data = data
+  move_distance = Math.ceil(data.length / 2)
   set_selection(0)
 }
 
@@ -134,9 +134,9 @@ document.addEventListener("keydown", function(event) {
   } else if (key.space == event.keyCode) {
     reveal()
   } else if (key.left == event.keyCode) {
-    move_up(event.ctrlKey)
+    move_up(!event.ctrlKey)
   } else if (key.right == event.keyCode) {
-    move_down(event.ctrlKey)
+    move_down(!event.ctrlKey)
   } else if (event.ctrlKey && key.q == event.keyCode) {
     save()
     electron.ipcRenderer.send("quit")

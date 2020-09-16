@@ -1,6 +1,7 @@
 const electron = require("electron")
 const content = document.getElementById("file-content")
 const save_status = document.getElementById("save-status")
+const recent_paths = document.getElementById("recent-paths")
 const key = {
   left: 37,
   right: 39,
@@ -124,8 +125,6 @@ function move_down(far) {
   save_with_timeout()
 }
 
-set_content(electron.ipcRenderer.sendSync("open-current-path"))
-
 document.addEventListener("keydown", function(event) {
   if (key.down == event.keyCode) {
     select_next()
@@ -138,7 +137,6 @@ document.addEventListener("keydown", function(event) {
   } else if (key.right == event.keyCode) {
     move_down(!event.ctrlKey)
   } else if (event.ctrlKey && key.q == event.keyCode) {
-    save()
     electron.ipcRenderer.send("quit")
   } else {
     return
@@ -146,6 +144,29 @@ document.addEventListener("keydown", function(event) {
   event.preventDefault()
 })
 
+function update_recent_paths() {
+  recent_paths.innerHTML = ""
+  const app_info = electron.ipcRenderer.sendSync("get-app-info")
+  app_info.recent_paths.forEach((a, index) => {
+    if (app_info.current_path == a) return
+    const b = document.createElement("span")
+    const basename = a.split("/")
+    b.innerHTML = basename[basename.length - 1]
+    b.setAttribute("class", "link-button")
+    b.addEventListener("click", () => {
+      set_content(electron.ipcRenderer.sendSync("open-recent", index))
+      update_recent_paths()
+    })
+    var separator = document.createTextNode(" | ")
+    recent_paths.appendChild(separator)
+    recent_paths.appendChild(b)
+  })
+}
+
 document.getElementById("open").addEventListener("click", () => {
   set_content(electron.ipcRenderer.sendSync("open-dialog"))
+  update_recent_paths()
 })
+
+set_content(electron.ipcRenderer.sendSync("open-argument-path"))
+update_recent_paths()

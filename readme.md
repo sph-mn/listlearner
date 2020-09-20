@@ -1,23 +1,24 @@
 # purpose
 * list questions from a text file and show answers by pressing the spacebar
-* sort lists from less known to well known by using the arrow keys
+* sort lists from less known to well known by using the left and right arrow keys
 
 example use case: learning vocabulary
 
 ![screenshot](other/screenshot.png?raw=true)
 
 # features
-* files for listlearner are space delimited dsv/csv files, which can be created with libreoffice calc or excel, or by hand. columns that include spaces are surrounded by ". inside " are escaped by doubling ""
-* the first column is the question, the rest the answer
-* csv headers are not supported, they will appear like any other line
-* files are saved automatically, and on quit by keypress. if unsaved, a grey box is displayed in the top right corner
-* the filename suffix is irrelevant. it can be .txt for compatibility with viewers
 * the files only have the lines resorted and stay plaintext. the files can be viewed anywhere where text files can be viewed
-* compared to spaced repetition flashcard software, with listlearner it is always possible to move freely between all questions and do immediate repeated reviews
-* shows links to recently opened files
-* counts the seconds a file was open and displays it in the top right corner, updated every 100 seconds
+* files for listlearner contain lines with space delimited columns. files can be created by hand, with libreoffice calc (use the filename suffic .csv) or excel
+* the first column is the question, the rest the answer
+* the filename suffix is irrelevant. it can be .txt
+* columns that include spaces are surrounded by doublequotes. doublequotes inside are escaped by doubling, ""
+* files are saved automatically, and on quit via ctrl+q. if unsaved, a grey box is displayed in the top right corner
+* csv headers are not handled and will appear like any other line
+* study time is tracked for each file, displayed in the top right corner and updated every 100 seconds
 
-make backups of your csv files before using the app
+compared to spaced repetition flashcard software, with listlearner it is always possible to move freely between all questions and do immediate repeated reviews.
+
+make backups of your csv files before using the app.
 
 # example file content
 ~~~

@@ -16,7 +16,7 @@
         background-color: #000;
         color: #aaa;
       }
-      #actions {
+      #top-bar {
         position: fixed;
         top: 0;
         width: 100%;
@@ -46,6 +46,11 @@
         width: 20px;
         height: 20px;
       }
+      #duration {
+        display: inline-block;
+        float: right;
+        margin-right: 20px;
+      }
       #save-status.unsaved {
         background-color: #888;
       }
@@ -55,9 +60,11 @@
     </style>
   </head>
   <body>
-    <div id="actions">
-      <span id="open" class="link-button">open</span> <span id="save-status"></span>
-      <span id="recent-paths"></span>
+    <div id="top-bar">
+      <span id="open" class="link-button">open</span>
+      <span id="recent"></span>
+      <span id="duration"></span>
+      <span id="save-status"></span>
     </div>
     <div id="file-content"></div>
   </body>

@@ -6,21 +6,26 @@ window = null
 csv_delimiter = " "
 current_path = null
 
-var recent = {
-  path: electron.app.getPath("userData") + "/recent.txt",
-  paths: [],
-  save: () => {
-    fs.writeFileSync(recent.path, recent.paths.join("\n"))
+const storage = {
+  cache: {
+    recent: [],
+    durations: {}
   },
+  path: electron.app.getPath("userData") + "/storage.json",
   load: () => {
-    if (fs.existsSync(recent.path)) {
-      recent.paths = fs.readFileSync(recent.path, "UTF-8").split("\n");
+    if (fs.existsSync(storage.path)) {
+      storage.cache = JSON.parse(fs.readFileSync(storage.path, "UTF-8"))
     }
   },
-  add: (path) => {
-    if (recent.paths.length > 6) recent.paths.unshift()
-    recent.paths.push(path)
-    recent.save()
+  save: () => {
+    fs.writeFileSync(storage.path, JSON.stringify(storage.cache))
+  },
+  add_recent_path: (a) => {
+    const cache = storage.cache
+    cache.recent = cache.recent.filter(b => b != a)
+    if (cache.recent.length > 6) cache.recent.unshift()
+    cache.recent.push(a)
+    storage.save()
   }
 }
 
@@ -38,12 +43,31 @@ function save_file(path, data) {
   }))
 }
 
-electron.ipcMain.on("get-app-info", (event, data) => {
-  event.returnValue = {recent_paths: recent.paths, current_path}
+electron.ipcMain.on("get-recent", (event, data) => {
+  event.returnValue = {
+    paths: storage.cache.recent,
+    current_path
+  }
+})
+
+electron.ipcMain.on("get-duration", (event, data) => {
+  event.returnValue = storage.cache.durations[current_path] || 0
+})
+
+electron.ipcMain.on("set-duration", (event, duration) => {
+  try {
+    storage.cache.durations[current_path] = duration
+    event.returnValue = false
+  } catch (error) {
+    event.returnValue = error.toString()
+  }
 })
 
 electron.app.on("window-all-closed", () => electron.app.quit())
-electron.ipcMain.on("quit", (event, path) => window.close())
+electron.ipcMain.on("quit", (event, path) => {
+  storage.save()
+  window.close()
+})
 
 electron.app.whenReady().then(function() {
   window = new electron.BrowserWindow({
@@ -65,7 +89,7 @@ electron.ipcMain.on("open-dialog", event => {
     event.returnValue = read_file(path)
     window.setTitle(path)
     current_path = path
-    recent.add(path)
+    storage.add_recent_path(path)
   } else {
     event.returnValue = false
   }
@@ -82,18 +106,19 @@ electron.ipcMain.on("open-argument-path", function(event) {
     event.returnValue = read_file(path)
     window.setTitle(path)
     current_path = path
-    recent.add(path)
+    storage.add_recent_path(path)
   } else {
     event.returnValue = false
   }
 })
 
 electron.ipcMain.on("open-recent", function(event, recent_index) {
-  var path = recent.paths[recent_index]
+  var path = storage.cache.recent[recent_index]
   if (path && fs.statSync(path).isFile()) {
     event.returnValue = read_file(path)
     window.setTitle(path)
     current_path = path
+    storage.add_recent_path(path)
   } else {
     event.returnValue = false
   }
@@ -102,10 +127,21 @@ electron.ipcMain.on("open-recent", function(event, recent_index) {
 electron.ipcMain.on("save", (event, data) => {
   try {
     save_file(current_path, data)
+    storage.save()
     event.returnValue = false
   } catch (error) {
     event.returnValue = error.toString()
   }
 })
 
-recent.load()
+process.on("uncaughtException", (error, origin) => {
+  console.error(error)
+  electron.dialog.showMessageBoxSync({
+    type: "error",
+    buttons: ["close"],
+    message: origin + " " + error.toString()
+  })
+  electron.app.quit()
+})
+
+storage.load()

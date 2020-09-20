@@ -197,7 +197,7 @@ const recent = {
 }
 
 const duration = {
-  interval_seconds: 10,
+  interval_seconds: 100,
   dom: document.getElementById("duration"),
   interval: null,
   current: null,

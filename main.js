@@ -32,7 +32,8 @@ const storage = {
 function read_file(path) {
   // string -> array
   return csv_parse(fs.readFileSync(path, "utf-8"), {
-    delimiter: csv_delimiter
+    delimiter: csv_delimiter,
+    relax_column_count: true
   })
 }
 

@@ -16,6 +16,7 @@ const list = {
     content: document.getElementById("file-content")
   },
   get_content: () => {
+    // -> [[string:column, ...], ...]
     result = []
     for (let i = 0; i < list.dom.content.children.length; i += 1) {
       const id = parseInt(list.dom.content.children[i].getAttribute("id"))
@@ -24,7 +25,7 @@ const list = {
     return result
   },
   set_content: (data) => {
-    // [[string:csv_field, ...]]
+    // [[string:column, ...], ...]
     if (!data) return
     list.dom.content.innerHTML = ""
     data.forEach(function(line, index) {

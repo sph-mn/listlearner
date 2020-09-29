@@ -21,9 +21,10 @@ const storage = {
     fs.writeFileSync(storage.path, JSON.stringify(storage.cache))
   },
   add_recent_path: (a) => {
+    const recent_count = 3
     const cache = storage.cache
     cache.recent = cache.recent.filter(b => b != a)
-    if (cache.recent.length > 6) cache.recent.unshift()
+    if (cache.recent.length > recent_count) cache.recent.unshift()
     cache.recent.push(a)
     storage.save()
   }

@@ -18,7 +18,7 @@ example use case: learning vocabulary
 
 compared to spaced repetition flashcard software, with listlearner it is always possible to move freely between all questions and do immediate repeated reviews.
 
-make backups of your csv files before using the app.
+make backups of your files before using the app.
 
 # example file content
 ~~~

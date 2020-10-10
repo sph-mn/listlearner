@@ -12,7 +12,7 @@ example use case: learning vocabulary
 * the first column is the question, the rest the answer
 * the filename suffix is irrelevant. it can be .txt
 * columns that include spaces are surrounded by doublequotes. doublequotes inside are escaped by doubling, ""
-* files are saved automatically, and on quit via ctrl+q. if unsaved, a grey box is displayed in the top right corner
+* file changes are saved automatically after 20 seconds and on quit when using ctrl+q
 * csv headers are not handled and will appear like any other line
 * study time is tracked for each file, displayed in the top right corner and updated every 100 seconds
 
@@ -33,10 +33,8 @@ there can be more than two columns. the first column is the question.
 | key | action |
 | --- | --- |
 | space  | show/hide answer |
-| left arrow | move the line to the top |
-| right arrow | move the line to the bottom |
-| ctrl + left arrow | move the line up by half the line count |
-| ctrl + right arrow | move the line down by half the line count |
+| ctrl + left arrow | move the line to the top |
+| ctrl + right arrow | move the line to the bottom |
 | ctrl + q | save and quit |
 
 # requirements and setup

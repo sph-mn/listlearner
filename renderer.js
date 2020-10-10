@@ -104,10 +104,10 @@ const list = {
         list.select_previous()
       } else if (list.key.space == event.keyCode) {
         list.reveal()
-      } else if (list.key.left == event.keyCode) {
-        list.move_up(!event.ctrlKey)
-      } else if (list.key.right == event.keyCode) {
-        list.move_down(!event.ctrlKey)
+      } else if (event.ctrlKey && list.key.left == event.keyCode) {
+        list.move_up(true)
+      } else if (event.ctrlKey && list.key.right == event.keyCode) {
+        list.move_down(true)
       } else if (event.ctrlKey && list.key.q == event.keyCode) {
         list.quit()
       } else {
@@ -127,14 +127,12 @@ const list = {
 }
 
 const file = {
-  dom: document.getElementById("save-status"),
   interval_seconds: 20000,
   interval: null,
   needs_save: false,
   open: false,
   request_save: () => {
     file.needs_save = true
-    file.dom.classList.add("unsaved")
   },
   trigger_before_open: () => {
     document.dispatchEvent(new Event("file-before-open"))
@@ -148,7 +146,6 @@ const file = {
     const error = electron.ipcRenderer.sendSync("save", list.get_content())
     if (error) return error
     file.needs_save = false
-    file.dom.classList.remove("unsaved")
     return false
   },
   init: () => {

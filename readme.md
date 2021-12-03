@@ -1,3 +1,7 @@
+moved to be a browser app at [sph.mn](http://sph.mn/other/listlearner/listlearner.html).
+
+this repository is unmaintained but can still be forked.
+
 # purpose
 * list questions from a text file and show answers by pressing the spacebar
 * sort lists from less known to well known by using the left and right arrow keys
